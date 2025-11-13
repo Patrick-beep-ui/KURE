@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('programs', function (Blueprint $table) {
+        Schema::create('conditions', function (Blueprint $table) {
             $table->id();
-            $table->string('program_name');
-            $table->string('modality')->nullable();
+            $table->string('condition_name');
+            $table->enum('condition_type', ['alergia', 'enfermedad_cronica', 'lesion', 'salud_mental', 'cirugia', 'otra'])->default('otra');
+            $table->text('condition_description')->nullable();
             $table->timestamps();
-            });
+        });
     }
 
     /**
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('programs');
+        Schema::dropIfExists('conditions');
     }
 };

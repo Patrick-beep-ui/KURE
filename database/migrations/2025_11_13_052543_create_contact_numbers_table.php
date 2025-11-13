@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('programs', function (Blueprint $table) {
+        Schema::create('contact_numbers', function (Blueprint $table) {
             $table->id();
-            $table->string('program_name');
-            $table->string('modality')->nullable();
+            $table->string('phone_number');
+            $table->enum('type', ['personal', 'emergencia'])->default('personal');
+            $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
             $table->timestamps();
-            });
+        });
     }
 
     /**
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('programs');
+        Schema::dropIfExists('contact_numbers');
     }
 };
