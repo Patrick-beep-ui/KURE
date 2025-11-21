@@ -13,7 +13,9 @@ class ControlledMedication extends Model
     protected $fillable = [
         'student_condition_id',
         'schedule',
-        'duration',
+        'duration_type',
+        'duration_amount',
+        'duration_unit',
         'medication_id',
     ];
 

@@ -31,4 +31,5 @@ Route::prefix('medications')->group(function () {
 // Conditions Routes
 Route::prefix('conditions')->group(function () {
     Route::get('/', [ConditionsController::class, 'getConditions']);
+    Route::post('/', [ConditionsController::class, 'createCondition']);
 });
