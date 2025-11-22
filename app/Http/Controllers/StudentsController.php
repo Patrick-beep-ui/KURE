@@ -21,6 +21,8 @@ class StudentsController extends Controller
     {
         try {
             $search = $request->query('search', '');
+            $residence = $request->query('residence');
+            $programId = $request->query('program_id');
     
             $students = Student::with([
                 'program',
@@ -41,7 +43,17 @@ class StudentsController extends Controller
                           $sub->where('phone_number', 'LIKE', "%{$search}%");
                       });
                 });
+
             })
+
+            ->when($residence, function ($query) use ($residence) {
+                $query->where('residence', $residence);
+            })
+    
+            ->when($programId, function ($query) use ($programId) {
+                $query->where('program_id', $programId);
+            })
+
             ->orderBy('first_name')
             ->paginate(10);
     
