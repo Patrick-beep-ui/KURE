@@ -5,6 +5,7 @@ use App\Http\Controllers\StudentsController;
 use App\Http\Controllers\ConsultationsController;
 use App\Http\Controllers\MedicationsController;
 use App\Http\Controllers\ConditionsController;
+use App\Http\Controllers\ProgramsController;
 
 Route::get('/test', function () {
     return response()->json(['message' => 'API is working']);
@@ -17,6 +18,12 @@ Route::prefix('students')->group(function () {
     Route::get('/{id}', [StudentsController::class, 'getStudentById']);
     Route::post('/', [StudentsController::class, 'store']);
 });
+
+// Programs routes
+Route::prefix('programs')->group(function () {
+    Route::get('/', [ProgramsController::class, 'getPrograms']);
+});
+
 
 // Consultations routes
 Route::prefix('consultations')->group(function() {
