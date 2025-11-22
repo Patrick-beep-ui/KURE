@@ -7,6 +7,7 @@ use App\Services\ConditionsService;
 use App\Models\Condition;
 use Illuminate\Http\JsonResponse;
 use Exception;
+use Illuminate\Http\Request;
 
 class ConditionsController extends Controller
 {
@@ -16,14 +17,36 @@ class ConditionsController extends Controller
         $this->service = $service;
     }
 
-    public function getConditions() {
+    public function getConditions(Request $request)
+    {
         try {
-            $conditions = Condition::all();
+            $search = $request->query('search', '');
+    
+            $conditions = Condition::with([
+                'studentConditions.student'
+            ])
+            ->whereHas('studentConditions')
+            ->when($search, function ($query) use ($search) {
+                $query->where('condition_name', 'LIKE', "%{$search}%")
+                    ->orWhere('condition_description', 'LIKE', "%{$search}%")
+                    ->orWhereHas('studentConditions.student', function ($q) use ($search) {
+                        $q->where('first_name', 'LIKE', "%{$search}%")
+                          ->orWhere('last_name', 'LIKE', "%{$search}%")
+                          ->orWhere('ku_id', 'LIKE', "%{$search}%");
+                    });
+            })
+            ->paginate(10);
+    
             return response()->json($conditions);
+    
         } catch (Exception $e) {
-            return response()->json(['error' => 'Error fetching conditions', 'message' => $e->getMessage()], 500);
+            return response()->json([
+                'error' => 'Error fetching conditions',
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
+    
 
     public function createCondition(ConditionForStudentRequest $request): JsonResponse {
         try {
