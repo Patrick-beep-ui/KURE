@@ -1,0 +1,20 @@
+
+    digraph textX {
+    fontname = "Bitstream Vera Sans"
+    fontsize = 8
+    node[
+        shape=record,
+        style=filled,
+        fillcolor=aliceblue
+    ]
+    nodesep = 0.3
+    edge[dir=black,arrowtail=empty]
+
+
+2945849416384 -> 2945849416528 [label="reglas:0" arrowtail=diamond dir=both]
+2945849416528 -> 2945849354928 [label="sentencia" arrowtail=diamond dir=both]
+2945849354928[label="{:ConsultaPor|+motivo:str='\"dolor de cabeza\"'\l+medicamentos:list=['\"paracetamol\"']\l}"]
+2945849416528[label="{:Regla|+clausula:str='cuando'\l}"]
+2945849416384[label="{:Model|}"]
+
+}

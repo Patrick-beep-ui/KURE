@@ -1,0 +1,101 @@
+Model:
+    reglas+=Regla
+;
+
+Regla:
+    clausula=Clausula sentencia=Sentencia | disponibilidad=Disponibilidad sentencia=Sentencia
+;
+
+Clausula:
+    'cuando' | 'si'
+;
+
+Disponibilidad: 
+    'dias' | 'horario'
+;
+
+Sentencia:
+      ConsultaPor
+    | ConsultaPorRol
+    | CondicionDescripcion
+    | CondicionTipo
+    | CondicionMedicamentos
+    | DiasDisponibles
+    | HorarioDisponible
+;
+
+ConsultaPor:
+    'consulta' 'es' 'por' motivo=TextoLibre ',' 'sugerir' 'medicamentos:' medicamentos+=Medicamento (',' medicamentos+=Medicamento)*
+;
+
+ConsultaPorRol:
+    'consulta' 'es' 'dada' 'por' rol=Rol ',' 'marcar' 'estado' 'de' 'medicamento' 'como' estado=EstadoMedicamento
+;
+
+CondicionDescripcion:
+    'condicion' 'es' condicion=TextoLibre ',' 'sugerir' 'descripcion:' descripcion=TextoLibre
+;
+
+CondicionTipo:
+    'condicion' 'es' 'de' 'tipo' tipo=Tipo ',' 'sugerir' 'medicamentos:' medicamentos+=Medicamento (',' medicamentos+=Medicamento)*
+;
+
+CondicionMedicamentos:
+    'condicion' 'es' condicion=TextoLibre ',' 'sugerir' 'medicamentos:' medicamentos+=Medicamento (',' medicamentos+=Medicamento)*
+;
+
+DiasDisponibles:
+    'disponibles' 'para' 'doctor:' dias+=Dia (',' dias+=Dia)*
+;
+
+HorarioDisponible:
+    'disponible' 'para' 'doctor:' horas+=RangoHora (',' horas+=RangoHora)*
+;
+
+Rol:
+    'doctor' | 'enfermera'
+;
+
+EstadoMedicamento:
+    'dada' | 'no disponible'
+;
+
+Tipo:
+      'Enfermedad' 'cronica'
+    | 'lesion'
+    | 'alergia'
+    | 'cirugia'
+    | 'salud mental'
+;
+
+Dia:
+    'Lunes' | 'Martes' | 'Miercoles' | 'Jueves' | 'Viernes'
+;
+
+RangoHora:
+    inicio=Hora '-' fin=Hora
+;
+
+Hora:
+    numero=Numero tiempo=Tiempo
+;
+
+Tiempo:
+    'AM' | 'PM'
+;
+
+Numero:
+/\d+/
+;
+
+Medicamento:
+    TextoLibre
+;
+
+TextoLibre:
+    /"[^"]*"/
+;
+
+Palabra:
+/[a-zA-ZáéíóúñÁÉÍÓÚÑ0-9_]+/
+;
