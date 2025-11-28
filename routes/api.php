@@ -6,6 +6,7 @@ use App\Http\Controllers\ConsultationsController;
 use App\Http\Controllers\MedicationsController;
 use App\Http\Controllers\ConditionsController;
 use App\Http\Controllers\ProgramsController;
+use App\Http\Controllers\RulesController;
 
 Route::get('/test', function () {
     return response()->json(['message' => 'API is working']);
@@ -39,4 +40,11 @@ Route::prefix('medications')->group(function () {
 Route::prefix('conditions')->group(function () {
     Route::get('/', [ConditionsController::class, 'getConditions']);
     Route::post('/', [ConditionsController::class, 'createCondition']);
+});
+
+
+// Rules DSL routes
+Route::prefix('rules')->group(function () {
+    Route::post('/validate', [RulesController::class, 'validate']);
+    Route::get('/ast', [RulesController::class, 'ast']); 
 });

@@ -1,0 +1,16 @@
+{
+    "reglas": [
+        {
+            "clausula": "cuando",
+            "sentencia": {
+                "motivo": "\"dolor de cabeza\"",
+                "medicamentos": [
+                    "\"paracetamol\""
+                ],
+                "parent": null
+            },
+            "disponibilidad": null,
+            "parent": null
+        }
+    ]
+}
