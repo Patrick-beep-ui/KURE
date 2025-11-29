@@ -1,3 +1,1 @@
-cuando consulta es por "dolor de cabeza", sugerir medicamentos: "ibuprofeno", "paracetamol"
-cuando consulta es por "dolor de garganta", sugerir medicamentos: "Amoxicilina"
-cuando consulta es por "dolor de estomago", sugerir medicamentos: "Salbutamol"
+cuando consulta es dada por enfermera, marcar estado de medicamento como dado
