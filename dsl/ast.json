@@ -3,11 +3,14 @@
     "reglas": [
         {
             "__class__": "Regla",
-            "clausula": "cuando",
+            "clausula": "si",
             "sentencia": {
-                "__class__": "ConsultaPorRol",
-                "rol": "doctor",
-                "estado": "dada",
+                "__class__": "CondicionMedicamentos",
+                "condicion": "\"migraña\"",
+                "medicamentos": [
+                    "\"Migretil\"",
+                    "\"Dolovitalgia\""
+                ],
                 "parent": null
             },
             "disponibilidad": null,

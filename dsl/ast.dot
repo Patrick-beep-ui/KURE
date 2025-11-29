@@ -11,10 +11,10 @@
     edge[dir=black,arrowtail=empty]
 
 
-2706874030784 -> 2706874030880 [label="reglas:0" arrowtail=diamond dir=both]
-2706874030880 -> 2706874031024 [label="sentencia" arrowtail=diamond dir=both]
-2706874031024[label="{:ConsultaPorRol|+rol:str='doctor'\l+estado:str='dada'\l}"]
-2706874030880[label="{:Regla|+clausula:str='cuando'\l}"]
-2706874030784[label="{:Model|}"]
+1848575253280 -> 1848575253424 [label="reglas:0" arrowtail=diamond dir=both]
+1848575253424 -> 1848575253568 [label="sentencia" arrowtail=diamond dir=both]
+1848575253568[label="{:CondicionMedicamentos|+condicion:str='\"migraña\"'\l+medicamentos:list=['\"Migretil\"','\"Dolovitalgia\"']\l}"]
+1848575253424[label="{:Regla|+clausula:str='si'\l}"]
+1848575253280[label="{:Model|}"]
 
 }
