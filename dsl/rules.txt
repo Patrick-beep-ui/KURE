@@ -1,1 +1,1 @@
-cuando consulta es dada por enfermera, marcar estado de medicamento como dado
+cuando consulta es dada por doctor, marcar estado de medicamento como dada

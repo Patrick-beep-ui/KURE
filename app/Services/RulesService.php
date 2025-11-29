@@ -118,7 +118,8 @@ class RulesService
 
             // ---- RULE TYPE: ConsultaPorRol ----
             if($type === "ConsultaPorRol") {
-                
+                $result = $this->validateConsultaPorRol($sentencia);
+                if (!$result['ok']) return $result;
             }
     
             // if ($type === "ConsultaPorRol") ...
@@ -157,10 +158,58 @@ class RulesService
         return ['ok' => true];
     }
 
-    public function validateConsultaPorRol(array $sentencia): array {
-        
+    public function validateConsultaPorRol(array $sentencia): array
+    {
+        $ROL = strtolower(trim($sentencia['rol'] ?? ''));
+        $newEstado = $sentencia['estado'] ?? null;
+    
+        if (!$ROL || !$newEstado) {
+            return [
+                'ok' => false,
+                'error' => 'Role and status are required for ConsultaPorRol'
+            ];
+        }
+    
+        // Load existing saved rules
+        $path = storage_path('app/rules/rules.json');
+        $existing = [];
+        if (file_exists($path)) {
+            $existing = json_decode(file_get_contents($path), true) ?? [];
+        }
+    
+        $existingRules = $existing['consultaporrol'] ?? [];
+    
+        foreach ($existingRules as $index => $rule) {
+            $existingRol = strtolower(trim($rule['rol'] ?? ''));
+            $existingEstado = $rule['estado'] ?? null;
+    
+            if ($existingRol === $ROL) {
+    
+                // If exactly the same rule, do nothing
+                if ($existingEstado === $newEstado) {
+                    return ['ok' => true]; 
+                }
+    
+                // If different status, replace the existing rule
+                $existing['consultaporrol'][$index]['estado'] = $newEstado;
+    
+                // Save back
+                file_put_contents($path, json_encode($existing, JSON_PRETTY_PRINT));
+    
+                return [
+                    'ok' => true,
+                    'replaced' => true,
+                    'message' => "Rule for role '{$ROL}' replaced with new status '{$newEstado}'.",
+                    'old' => $rule
+                ];
+            }
+        }
+    
+        // No existing rule for this role → OK
         return ['ok' => true];
     }
+    
+    
 
     public function saveRules(array $rules): bool {
         try {
