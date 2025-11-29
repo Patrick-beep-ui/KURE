@@ -11,10 +11,18 @@
     edge[dir=black,arrowtail=empty]
 
 
-2945849416384 -> 2945849416528 [label="reglas:0" arrowtail=diamond dir=both]
-2945849416528 -> 2945849354928 [label="sentencia" arrowtail=diamond dir=both]
-2945849354928[label="{:ConsultaPor|+motivo:str='\"dolor de cabeza\"'\l+medicamentos:list=['\"paracetamol\"']\l}"]
-2945849416528[label="{:Regla|+clausula:str='cuando'\l}"]
-2945849416384[label="{:Model|}"]
+3045420816608 -> 3045420816752 [label="reglas:0" arrowtail=diamond dir=both]
+3045420816752 -> 3045420816848 [label="sentencia" arrowtail=diamond dir=both]
+3045420816848[label="{:ConsultaPor|+motivo:str='\"dolor de cabeza\"'\l+medicamentos:list=['\"ibuprofeno\"','\"paracetamol\"']\l}"]
+3045420816752[label="{:Regla|+clausula:str='cuando'\l}"]
+3045420816608 -> 3045420755632 [label="reglas:1" arrowtail=diamond dir=both]
+3045420755632 -> 3045420816896 [label="sentencia" arrowtail=diamond dir=both]
+3045420816896[label="{:ConsultaPor|+motivo:str='\"dolor de garganta\...'\l+medicamentos:list=['\"Amoxicilina\"']\l}"]
+3045420755632[label="{:Regla|+clausula:str='cuando'\l}"]
+3045420816608 -> 3045420816800 [label="reglas:2" arrowtail=diamond dir=both]
+3045420816800 -> 3045420817040 [label="sentencia" arrowtail=diamond dir=both]
+3045420817040[label="{:ConsultaPor|+motivo:str='\"dolor de estomago\...'\l+medicamentos:list=['\"Salbutamol\"']\l}"]
+3045420816800[label="{:Regla|+clausula:str='cuando'\l}"]
+3045420816608[label="{:Model|}"]
 
 }
