@@ -1,11 +1,43 @@
 {
+    "__class__": "Model",
     "reglas": [
         {
+            "__class__": "Regla",
             "clausula": "cuando",
             "sentencia": {
+                "__class__": "ConsultaPor",
                 "motivo": "\"dolor de cabeza\"",
                 "medicamentos": [
+                    "\"ibuprofeno\"",
                     "\"paracetamol\""
+                ],
+                "parent": null
+            },
+            "disponibilidad": null,
+            "parent": null
+        },
+        {
+            "__class__": "Regla",
+            "clausula": "cuando",
+            "sentencia": {
+                "__class__": "ConsultaPor",
+                "motivo": "\"dolor de garganta\"",
+                "medicamentos": [
+                    "\"Amoxicilina\""
+                ],
+                "parent": null
+            },
+            "disponibilidad": null,
+            "parent": null
+        },
+        {
+            "__class__": "Regla",
+            "clausula": "cuando",
+            "sentencia": {
+                "__class__": "ConsultaPor",
+                "motivo": "\"dolor de estomago\"",
+                "medicamentos": [
+                    "\"Salbutamol\""
                 ],
                 "parent": null
             },

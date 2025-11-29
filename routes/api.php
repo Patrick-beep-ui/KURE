@@ -34,6 +34,7 @@ Route::prefix('consultations')->group(function() {
 // Medications routes
 Route::prefix('medications')->group(function () {
     Route::get('/', [MedicationsController::class, 'index']);
+    Route::get('/suggestions', [MedicationsController::class, 'suggestMedications']);
 });
 
 // Conditions Routes
@@ -46,5 +47,6 @@ Route::prefix('conditions')->group(function () {
 // Rules DSL routes
 Route::prefix('rules')->group(function () {
     Route::post('/validate', [RulesController::class, 'validate']);
+    Route::post('/save', [RulesController::class, 'save']);
     Route::get('/ast', [RulesController::class, 'ast']); 
 });

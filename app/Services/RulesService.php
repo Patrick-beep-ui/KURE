@@ -4,6 +4,10 @@ namespace App\Services;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use App\Models\Medication;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+use Exception;
 
 class RulesService
 {
@@ -29,7 +33,7 @@ class RulesService
 
         try {
             $process->run();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return ['ok' => false, 'error' => 'Runtime error: ' . $e->getMessage()];
         }
 
@@ -54,16 +58,27 @@ class RulesService
         }
 
         $decoded['ok'] = true;
+
+        $semantic = $this->validateSemantics($decoded['reglas'] ?? []);
+        if ($semantic['ok'] === false) {
+            return $semantic;
+        }
+
         return $decoded;
     }
 
     public function getAstImage()
     {
-        $path = $this->dslPath . DIRECTORY_SEPARATOR . 'ast.png';
-        if (file_exists($path)) {
-            return $path;
+        try {
+            $path = $this->dslPath . DIRECTORY_SEPARATOR . 'ast.png';
+            if (file_exists($path)) {
+                return $path;
+            }
+            return null;
         }
-        return null;
+        catch (Exception $e) {
+            return null;
+        }
     }
 
     public function applies(string $eventType, array $context){
@@ -83,4 +98,104 @@ class RulesService
 
         return false;
     }
+
+    public function validateSemantics(array $rules): array
+    {
+        foreach ($rules as $rule) {
+    
+            $sentencia = $rule['sentencia'] ?? null;
+            if (!$sentencia) continue;
+    
+            $type = $sentencia['__class__'] ?? null;  
+    
+            // ---- RULE TYPE: ConsultaPor ----
+            if ($type === "ConsultaPor") {
+                $result = $this->validateConsultaPor($sentencia);
+                if (!$result['ok']) {
+                    return $result;
+                }
+            }
+    
+            // if ($type === "ConsultaPorRol") ...
+            // if ($type === "CondicionTipo") ...
+            // etc.
+        }
+    
+        return ['ok' => true];
+    }
+
+    private function validateConsultaPor(array $sentencia): array {
+        $meds = $sentencia['medicamentos'] ?? [];
+    
+        $cleanNames = array_map(function ($m) {
+            return trim($m, "\"' "); // remove quotes and whitespace
+        }, $meds);
+
+        $lowerNames = array_map('strtolower', $cleanNames);
+    
+        // Fetch all medication names from database
+        $existing = Medication::whereIn(DB::raw('LOWER(name)'), $lowerNames)
+            ->pluck('name')
+            ->toArray();
+
+        $existingLower = array_map('strtolower', $existing);
+        $missing = array_diff($lowerNames, $existingLower);
+    
+        if (!empty($missing)) {
+            return [
+                'ok' => false,
+                'error' => 'Medication not found in database',
+                'missing' => array_values($missing),
+            ];
+        }
+    
+        return ['ok' => true];
+    }
+
+    public function saveRules(array $rules): bool {
+        try {
+            $path = storage_path('app/rules/rules.json');
+
+            // Load existing rules if file exists
+            $existing = [];
+            if (file_exists($path)) {
+                $existing = json_decode(file_get_contents($path), true) ?? [];
+            }
+    
+            // Merge new rules by type
+            foreach ($rules as $rule) {
+                $sentencia = $rule['sentencia'] ?? null;
+                if (!$sentencia) continue;
+    
+                $type = $rule['sentencia']['__class__'] ?? 'unknown';
+                $key = strtolower($type);
+    
+                if (!isset($existing[$key])) {
+                    $existing[$key] = [];
+                }
+    
+                // Check if the exact same rule exists
+                $exists = false;
+                foreach ($existing[$key] as $r) {
+                    if ($r == $sentencia) {  
+                        $exists = true;
+                        break;
+                    }
+                }
+    
+                if (!$exists) {
+                    $existing[$key][] = $rule['sentencia'];
+                }
+            }
+    
+            // Save back to file
+            return file_put_contents($path, json_encode($existing, JSON_PRETTY_PRINT)) !== false;
+        }
+        catch (Exception $e) {
+            Log::error('Failed to save rules: ' . $e->getMessage());
+            return false;
+        }
+    }
+
 }
+

@@ -16,7 +16,7 @@ def model_to_dict(obj, visited=None):
 
     if hasattr(obj, '__class__') and hasattr(obj, '__dict__'):
         visited.add(id(obj))
-        d = {}
+        d = {"__class__": obj.__class__.__name__}
         for k, v in obj.__dict__.items():
             if k.startswith('_'):
                 continue
