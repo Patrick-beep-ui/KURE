@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\RulesService;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Log;
 use Exception;
 
 class RulesController extends Controller
@@ -30,6 +31,7 @@ class RulesController extends Controller
                 if (!$saved) {
                     return response()->json(['ok' => false, 'error' => 'Failed to save rules'], 500);
                 }
+                Log::info('Rules saved successfully' . $saved);
             }
     
             return response()->json([

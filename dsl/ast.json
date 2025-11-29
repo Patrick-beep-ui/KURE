@@ -6,7 +6,7 @@
             "clausula": "cuando",
             "sentencia": {
                 "__class__": "ConsultaPorRol",
-                "rol": "enfermera",
+                "rol": "doctor",
                 "estado": "dada",
                 "parent": null
             },

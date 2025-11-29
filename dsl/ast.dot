@@ -11,10 +11,10 @@
     edge[dir=black,arrowtail=empty]
 
 
-2003327310432 -> 2003327310384 [label="reglas:0" arrowtail=diamond dir=both]
-2003327310384 -> 2003327310672 [label="sentencia" arrowtail=diamond dir=both]
-2003327310672[label="{:ConsultaPorRol|+rol:str='enfermera'\l+estado:str='dada'\l}"]
-2003327310384[label="{:Regla|+clausula:str='cuando'\l}"]
-2003327310432[label="{:Model|}"]
+2706874030784 -> 2706874030880 [label="reglas:0" arrowtail=diamond dir=both]
+2706874030880 -> 2706874031024 [label="sentencia" arrowtail=diamond dir=both]
+2706874031024[label="{:ConsultaPorRol|+rol:str='doctor'\l+estado:str='dada'\l}"]
+2706874030880[label="{:Regla|+clausula:str='cuando'\l}"]
+2706874030784[label="{:Model|}"]
 
 }
