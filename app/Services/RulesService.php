@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use App\Models\Medication;
+use App\Models\Condition;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Exception;
@@ -23,6 +24,8 @@ class RulesService
     public function validateRule(string $rule): array
     {
         $rulesFile = $this->dslPath . DIRECTORY_SEPARATOR . 'rules.txt';
+
+        $rule = mb_convert_encoding($rule, 'UTF-8', 'UTF-8');
         file_put_contents($rulesFile, $rule);
 
         $cmd = [$this->pythonBin, $this->dslPath . DIRECTORY_SEPARATOR . 'main.py'];
@@ -44,6 +47,7 @@ class RulesService
             // not fatal, but include for debugging
         }
 
+        $output = mb_convert_encoding($output, 'UTF-8', 'UTF-8');
         $decoded = @json_decode($output, true);
 
         if ($decoded === null) {
@@ -55,6 +59,14 @@ class RulesService
                 'stderr' => $errorOutput,
             ];
             return $payload;
+        }
+
+        if (isset($decoded['reglas'])) {
+            foreach ($decoded['reglas'] as &$regla) {
+                if (isset($regla['sentencia']['condicion'])) {
+                    $regla['sentencia']['condicion'] = str_replace('?', 'ñ', $regla['sentencia']['condicion']);
+                }
+            }
         }
 
         $decoded['ok'] = true;
@@ -121,10 +133,12 @@ class RulesService
                 $result = $this->validateConsultaPorRol($sentencia);
                 if (!$result['ok']) return $result;
             }
-    
-            // if ($type === "ConsultaPorRol") ...
-            // if ($type === "CondicionTipo") ...
-            // etc.
+
+            // ---- RULE TYPE: ConsultaPorRol ---- 
+            if($type === "CondicionMedicamentos") {
+                $result = $this->validateCondicionMedicamentos($sentencia);
+                if (!$result['ok']) return $result;
+            }
         }
     
         return ['ok' => true];
@@ -158,6 +172,59 @@ class RulesService
         return ['ok' => true];
     }
 
+    public function validateCondicionMedicamentos(array $sentencia): array {
+        $meds = $sentencia['medicamentos'] ?? [];
+        $condition = $sentencia['condicion'] ?? null;
+    
+        // Clean medication names
+        $cleanMedNames = array_map(function ($m) {
+            return trim($m, "\"' ");
+        }, $meds);
+    
+        // Clean condition name (single string)
+        $cleanCondName = trim($condition, "\"' ");
+    
+        // Lowercase versions
+        $lowerMedNames = array_map('strtolower', $cleanMedNames);
+        $lowerCondName = strtolower($cleanCondName);
+    
+        // Fetch existing meds
+        $existingMed = Medication::whereIn(DB::raw('LOWER(name)'), $lowerMedNames)
+            ->pluck('name')
+            ->toArray();
+    
+        // Fetch existing condition (single lookup)
+        $existingCond = Condition::where(DB::raw('LOWER(condition_name)'), $lowerCondName)
+            ->pluck('condition_name')
+            ->first();
+    
+        // Normalize existing values
+        $existingMedLower = array_map('strtolower', $existingMed);
+    
+        // Find missing meds
+        $missingMeds = array_diff($lowerMedNames, $existingMedLower);
+    
+        if (!empty($missingMeds)) {
+            return [
+                'ok' => false,
+                'error' => 'Medication not found in database',
+                'missing' => array_values($missingMeds),
+            ];
+        }
+    
+        // Check condition
+        if (!$existingCond) {
+            return [
+                'ok' => false,
+                'error' => 'Condition not found in database',
+                'missing' => [$cleanCondName],
+            ];
+        }
+    
+        return ['ok' => true];
+    }
+    
+
     public function validateConsultaPorRol(array $sentencia): array
     {
         $ROL = strtolower(trim($sentencia['rol'] ?? ''));
@@ -166,7 +233,7 @@ class RulesService
         if (!$ROL || !$newEstado) {
             return [
                 'ok' => false,
-                'error' => 'Role and status are required for ConsultaPorRol'
+                'error' => 'se requiren rol y estado de medicamento para esta consulta'
             ];
         }
     
@@ -194,7 +261,7 @@ class RulesService
                 $existing['consultaporrol'][$index]['estado'] = $newEstado;
     
                 // Save back
-                file_put_contents($path, json_encode($existing, JSON_PRETTY_PRINT));
+                file_put_contents($path, json_encode($existing, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     
                 return [
                     'ok' => true,
@@ -209,8 +276,6 @@ class RulesService
         return ['ok' => true];
     }
     
-    
-
     public function saveRules(array $rules): bool {
         try {
             $path = storage_path('app/rules/rules.json');
@@ -243,18 +308,33 @@ class RulesService
                 }
     
                 if (!$exists) {
-                    $existing[$key][] = $rule['sentencia'];
+                    $existing[$key][] = $this->utf8ize($rule['sentencia']);
                 }
             }
     
             // Save back to file
-            return file_put_contents($path, json_encode($existing, JSON_PRETTY_PRINT)) !== false;
+            return file_put_contents($path, json_encode($existing, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) !== false;
         }
         catch (Exception $e) {
             Log::error('Failed to save rules: ' . $e->getMessage());
             return false;
         }
     }
+
+    private function utf8ize($mixed) {
+        if (is_array($mixed)) {
+            foreach ($mixed as $key => $value) {
+                $mixed[$key] = $this->utf8ize($value);
+            }
+        } else if (is_string($mixed)) {
+            // Convert to UTF-8, ignoring invalid sequences
+            return mb_convert_encoding($mixed, 'UTF-8', 'UTF-8'); 
+            // or better:
+            //return iconv('UTF-8', 'UTF-8//IGNORE', $mixed);
+        }
+        return $mixed;
+    }
+    
 
 }
 
