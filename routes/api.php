@@ -35,6 +35,7 @@ Route::prefix('consultations')->group(function() {
 Route::prefix('medications')->group(function () {
     Route::get('/', [MedicationsController::class, 'index']);
     Route::get('/suggestions', [MedicationsController::class, 'suggestMedications']);
+    Route::get('/status', [MedicationsController::class, 'medicationStatus']);
 });
 
 // Conditions Routes

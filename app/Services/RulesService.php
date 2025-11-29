@@ -115,6 +115,11 @@ class RulesService
                     return $result;
                 }
             }
+
+            // ---- RULE TYPE: ConsultaPorRol ----
+            if($type === "ConsultaPorRol") {
+                
+            }
     
             // if ($type === "ConsultaPorRol") ...
             // if ($type === "CondicionTipo") ...
@@ -149,6 +154,11 @@ class RulesService
             ];
         }
     
+        return ['ok' => true];
+    }
+
+    public function validateConsultaPorRol(array $sentencia): array {
+        
         return ['ok' => true];
     }
 

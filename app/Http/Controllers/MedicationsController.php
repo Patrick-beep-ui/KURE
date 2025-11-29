@@ -18,7 +18,25 @@ class MedicationsController extends Controller
         }
     }
 
-    // RulesController.php
+    public function medicationStatus() {
+        try {
+            $rulesPath = storage_path('app/rules/rules.json');
+            $rulesJson = json_decode(file_get_contents($rulesPath), true);
+
+            if (!empty($rulesJson['consultaporrol'])) {
+                foreach ($rulesJson['consultaporrol'] as $rule) {
+                    $role = trim($rule['rol'], '"');
+                    $status = trim($rule['estado'], '"');
+                }
+            }
+
+            return response()->json(['role' => $role ?? null, 'status' => $status ?? null], 200);
+           
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Failed to retrieve medication status'], 500);
+        }
+    }
+
     public function suggestMedications(Request $request)
     {
         try {
@@ -26,33 +44,41 @@ class MedicationsController extends Controller
             if (empty($reason)) {
                 return response()->json(['error' => 'Reason is required'], 400);
             }
-
-            // Load the rules from JSON (you can also cache this)
-            $rulesPath = storage_path('app/rules.json');
+    
+            // Load the rules from JSON
+            $rulesPath = storage_path('app/rules/rules.json');
             $rulesJson = json_decode(file_get_contents($rulesPath), true);
-
-            $suggestions = [];
-
+    
+            $suggestionNames = [];
+    
             if (!empty($rulesJson['consultapor'])) {
                 foreach ($rulesJson['consultapor'] as $rule) {
                     // simple case-insensitive match on motivo
                     if (stripos($reason, trim($rule['motivo'], '"')) !== false) {
-                        // add all medications for this reason
                         foreach ($rule['medicamentos'] as $med) {
-                            $suggestions[] = trim($med, '"');
+                            $suggestionNames[] = trim($med, '"');
                         }
                     }
                 }
             }
-
+    
             // Remove duplicates
-            $suggestions = array_values(array_unique($suggestions));
-
-            return response()->json(['suggestions' => $suggestions]);
-
+            $suggestionNames = array_values(array_unique($suggestionNames));
+    
+            if (empty($suggestionNames)) {
+                return response()->json(['suggestions' => []]);
+            }
+    
+            // Fetch matching medications from the database 
+            $medications = Medication::whereIn('name', $suggestionNames)->get();
+    
+            return response()->json(['suggestions' => $medications]);
+    
         } catch (Exception $e) {
             return response()->json(['error' => 'Failed to get suggestions', 'details' => $e->getMessage()], 500);
         }
     }
+    
+    
 
 }
