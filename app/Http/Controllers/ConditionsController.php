@@ -8,6 +8,7 @@ use App\Models\Condition;
 use Illuminate\Http\JsonResponse;
 use Exception;
 use Illuminate\Http\Request;
+use App\Models\Medication;
 
 class ConditionsController extends Controller
 {
@@ -58,6 +59,55 @@ class ConditionsController extends Controller
         }
         catch(Exception $e) {
             return response()->json(['error' => 'Error creating condition', 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function suggestedConditionMedications(Request $request)
+    {
+        try {
+            $condition = $request->get('condition', '');
+            if (empty($condition)) {
+                return response()->json(['error' => 'Condition is required'], 400);
+            }
+    
+            $rulesPath = storage_path('app/rules/rules.json');
+            $rulesJson = json_decode(file_get_contents($rulesPath), true);
+    
+            $suggestionNames = [];
+    
+            if (!empty($rulesJson['condicionmedicamentos'])) {
+                foreach ($rulesJson['condicionmedicamentos'] as $rule) {
+                    // simple case-insensitive match on reason
+                    if (stripos($condition, trim($rule['condicion'], '"')) !== false) {
+                        foreach ($rule['medicamentos'] as $med) {
+                            $suggestionNames[] = trim($med, '"');
+                        }
+                    }
+                }
+            }
+
+            $suggestionNames = array_values(array_unique($suggestionNames));
+            if (empty($suggestionNames)) {
+                return response()->json(['suggestions' => []]);
+            }
+
+            $medications = Medication::whereIn('name', $suggestionNames)
+            ->get()
+            ->map(function ($m) {
+                return [
+                    'medication_id' => $m->id,
+                    'name' => $m->name,
+                    'dosage' => $m->dosage,
+                    'unit' => $m->unit,
+                    'description' => $m->description,
+                ];
+            });
+
+    
+            return response()->json(['suggestions' => $medications], 200);
+    
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Failed to retrieve condition suggestions'], 500);
         }
     }
 }
