@@ -7,6 +7,7 @@ use App\Http\Controllers\MedicationsController;
 use App\Http\Controllers\ConditionsController;
 use App\Http\Controllers\ProgramsController;
 use App\Http\Controllers\RulesController;
+use App\Http\Controllers\UsersController;
 
 Route::get('/test', function () {
     return response()->json(['message' => 'API is working']);
@@ -45,6 +46,11 @@ Route::prefix('conditions')->group(function () {
     Route::get('/suggestions', [ConditionsController::class, 'suggestedConditionMedications']);
 });
 
+//Appointments
+Route::prefix('appointments')->group(function () {
+    Route::post('/', [ConsultationsController::class, 'createAppointment']);
+    Route::get('/doctors', [UsersController::class, 'getDoctors']);
+});
 
 // Rules DSL routes
 Route::prefix('rules')->group(function () {

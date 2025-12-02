@@ -35,4 +35,10 @@ class Appointment extends Model
     {
         return $this->belongsTo(Consultation::class);
     }
+
+    public function provider()
+    {
+        return $this->belongsTo(User::class, 'provided_by');
+    }
+
 }
