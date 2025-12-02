@@ -3,17 +3,17 @@
     "reglas": [
         {
             "__class__": "Regla",
-            "clausula": "si",
+            "clausula": null,
             "sentencia": {
-                "__class__": "CondicionMedicamentos",
-                "condicion": "\"migraña\"",
-                "medicamentos": [
-                    "\"Migretil\"",
-                    "\"Dolovitalgia\""
+                "__class__": "DiasDisponibles",
+                "dias": [
+                    "Lunes",
+                    "Miercoles",
+                    "Viernes"
                 ],
                 "parent": null
             },
-            "disponibilidad": null,
+            "disponibilidad": "dias",
             "parent": null
         }
     ]
