@@ -11,10 +11,10 @@
     edge[dir=black,arrowtail=empty]
 
 
-1596756318480 -> 1596756318624 [label="reglas:0" arrowtail=diamond dir=both]
-1596756318624 -> 1596756318720 [label="sentencia" arrowtail=diamond dir=both]
-1596756318720[label="{:ConsultaPor|+motivo:str='\"ardor en los ojos\...'\l+medicamentos:list=['\"paracetamol\"','\"ibuprofeno\"']\l}"]
-1596756318624[label="{:Regla|+clausula:str='cuando'\l}"]
-1596756318480[label="{:Model|}"]
+2333639581312 -> 2333639581264 [label="reglas:0" arrowtail=diamond dir=both]
+2333639581264 -> 2333639581024 [label="sentencia" arrowtail=diamond dir=both]
+2333639581024[label="{:DiasDisponibles|+doctor:str='\"Domenica Harris\"'\l+dias:list=['Lunes','Miercoles','Viernes']\l}"]
+2333639581264[label="{:Regla|+disponibilidad:str='dias'\l}"]
+2333639581312[label="{:Model|}"]
 
 }

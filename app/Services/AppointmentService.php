@@ -31,4 +31,8 @@ class AppointmentService {
             throw new Exception('Failed to schedule appointment: ' . $e->getMessage());
         }
     }
+
+    public function getAppointmentsByStudent($student_id) {
+        return Appointment::where('student_id', $student_id)->get();
+    }
 }

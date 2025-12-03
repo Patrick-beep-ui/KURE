@@ -50,7 +50,9 @@ Route::prefix('conditions')->group(function () {
 //Appointments
 Route::prefix('appointments')->group(function () {
     Route::post('/', [AppointmentsController::class, 'createAppointment']);
+    Route::get('/student/{student_id}', [AppointmentsController::class, 'getAppointmentsByStudent']);
     Route::get('/doctors', [UsersController::class, 'getDoctors']);
+    Route::get('/doctor/availability/{doctor_id}', [AppointmentsController::class, 'getDoctorAvailability']);
 });
 
 // Rules DSL routes

@@ -3,17 +3,18 @@
     "reglas": [
         {
             "__class__": "Regla",
-            "clausula": "cuando",
+            "clausula": null,
             "sentencia": {
-                "__class__": "ConsultaPor",
-                "motivo": "\"ardor en los ojos\"",
-                "medicamentos": [
-                    "\"paracetamol\"",
-                    "\"ibuprofeno\""
+                "__class__": "DiasDisponibles",
+                "doctor": "\"Domenica Harris\"",
+                "dias": [
+                    "Lunes",
+                    "Miercoles",
+                    "Viernes"
                 ],
                 "parent": null
             },
-            "disponibilidad": null,
+            "disponibilidad": "dias",
             "parent": null
         }
     ]
