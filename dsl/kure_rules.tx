@@ -45,7 +45,7 @@ CondicionMedicamentos:
 ;
 
 DiasDisponibles:
-    'disponibles' 'para' 'doctor:' dias+=Dia (',' dias+=Dia)*
+    'disponibles' 'para' 'doctor' doctor=Doctor ':' dias+=Dia (',' dias+=Dia)*
 ;
 
 HorarioDisponible:
@@ -89,6 +89,10 @@ Numero:
 ;
 
 Medicamento:
+    TextoLibre
+;
+
+Doctor:
     TextoLibre
 ;
 

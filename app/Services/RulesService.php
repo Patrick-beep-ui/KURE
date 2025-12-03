@@ -6,6 +6,7 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use App\Models\Medication;
 use App\Models\Condition;
+use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Exception;
@@ -137,6 +138,12 @@ class RulesService
             // ---- RULE TYPE: ConsultaPorRol ---- 
             if($type === "CondicionMedicamentos") {
                 $result = $this->validateCondicionMedicamentos($sentencia);
+                if (!$result['ok']) return $result;
+            }
+
+            // ---- RULE TYPE: DiasDisponibles ----
+            if($type === "DiasDisponibles") {
+                $result = $this->validateDiasDisponibles($sentencia);
                 if (!$result['ok']) return $result;
             }
         }
@@ -275,6 +282,71 @@ class RulesService
         // No existing rule for this role → OK
         return ['ok' => true];
     }
+
+    public function validateDiasDisponibles(array $sentencia): array
+    {
+        $doctorRaw = $sentencia['doctor'] ?? null;
+        $dias = $sentencia['dias'] ?? [];
+    
+        if (!$doctorRaw) {
+            return [
+                'ok' => false,
+                'error' => 'Doctor name is required for available days rule.'
+            ];
+        }
+    
+        // Remove quotes
+        $doctorFullName = trim($doctorRaw, "\"' ");
+    
+        // Split into first + last name
+        $parts = preg_split('/\s+/', $doctorFullName);
+    
+        if (count($parts) < 2) {
+            return [
+                'ok' => false,
+                'error' => 'Doctor full name is required (first and last name).',
+                'value' => $doctorFullName
+            ];
+        }
+    
+        $firstName = strtolower($parts[0]);
+        $lastName  = strtolower($parts[count($parts) - 1]); // supports middle names
+
+        $doctor = User::where(DB::raw('LOWER(first_name)'), $firstName)
+            ->where(DB::raw('LOWER(last_name)'), $lastName)
+            ->first();
+    
+        if (!$doctor) {
+            return [
+                'ok' => false,
+                'error' => 'Doctor not found in database.',
+                'missing' => [$doctorFullName]
+            ];
+        }
+    
+        // Ensure the user is actually a doctor
+        if (isset($doctor->role) && strtolower($doctor->role) !== 'doctor') {
+            return [
+                'ok' => false,
+                'error' => "User '{$doctorFullName}' exists but is not a doctor."
+            ];
+        }
+    
+        // validate day names
+        $validDays = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
+        foreach ($dias as $dia) {
+            if (!in_array(strtolower($dia), $validDays)) {
+                return [
+                    'ok' => false,
+                    'error' => "Invalid day detected: {$dia}"
+                ];
+            }
+        }
+    
+        return ['ok' => true];
+    }
+    
+    
     
     public function saveRules(array $rules): bool {
         try {

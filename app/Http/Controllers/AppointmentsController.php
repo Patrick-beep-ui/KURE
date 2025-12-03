@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests\AppointmentRequest;
 use Illuminate\Http\JsonResponse;
 use App\Services\AppointmentService;
+use App\Models\Appointment;
+use App\Models\User;
 use Exception;
 
 class AppointmentsController extends Controller
@@ -31,4 +33,77 @@ class AppointmentsController extends Controller
             ], 500);
         }
     }
+
+    public function getAppointmentsByStudent($student_id) {
+        try {
+            $appointments = $this->service->getAppointmentsByStudent($student_id);
+            return response()->json($appointments);
+        }
+        catch(Exception $e) {
+            return response()->json([
+                'error' => 'Error fetching appointments',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getDoctorAvailability($doctorId)
+    {
+        try {
+            $doctor = User::findOrFail($doctorId);
+    
+            $rulesPath = storage_path('app/rules/rules.json');
+    
+            if (!file_exists($rulesPath)) {
+                return response()->json([
+                    'doctor' => $doctor->first_name . ' ' . $doctor->last_name,
+                    'days' => [],
+                    'hours' => []
+                ]);
+            }
+    
+            $rulesJson = json_decode(file_get_contents($rulesPath), true);
+    
+            $daysAvailable = [];
+            $hoursAvailable = [];
+    
+            $doctorFullName = strtolower(trim(
+                $doctor->first_name . ' ' . $doctor->last_name
+            ));
+    
+            foreach ($rulesJson['diasdisponibles'] ?? [] as $rule) {
+    
+                if (!isset($rule['doctor'], $rule['dias'])) {
+                    continue;
+                }
+
+                $ruleDoctor = strtolower(trim($rule['doctor'], "\"' "));
+    
+                if ($ruleDoctor === $doctorFullName) {
+                    $daysAvailable = array_merge($daysAvailable, $rule['dias']);
+                }
+            }
+    
+            // HorarioDisponible
+            foreach ($rulesJson['horariodisponible'] ?? [] as $rule) {
+                if (isset($rule['horas'])) {
+                    $hoursAvailable = array_merge($hoursAvailable, $rule['horas']);
+                }
+            }
+    
+            return response()->json([
+                'doctor_id' => $doctor->id,
+                'doctor' => $doctor->first_name . ' ' . $doctor->last_name,
+                'days' => array_values(array_unique($daysAvailable)),
+                'hours' => array_values(array_unique($hoursAvailable)),
+            ]);
+    
+        } catch (Exception $e) {
+            return response()->json([
+                'error' => 'Error fetching doctor availability',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }    
+    
 }
