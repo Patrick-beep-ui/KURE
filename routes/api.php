@@ -8,6 +8,7 @@ use App\Http\Controllers\ConditionsController;
 use App\Http\Controllers\ProgramsController;
 use App\Http\Controllers\RulesController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\AppointmentsController;
 
 Route::get('/test', function () {
     return response()->json(['message' => 'API is working']);
@@ -48,7 +49,7 @@ Route::prefix('conditions')->group(function () {
 
 //Appointments
 Route::prefix('appointments')->group(function () {
-    Route::post('/', [ConsultationsController::class, 'createAppointment']);
+    Route::post('/', [AppointmentsController::class, 'createAppointment']);
     Route::get('/doctors', [UsersController::class, 'getDoctors']);
 });
 

@@ -3,17 +3,17 @@
     "reglas": [
         {
             "__class__": "Regla",
-            "clausula": null,
+            "clausula": "cuando",
             "sentencia": {
-                "__class__": "DiasDisponibles",
-                "dias": [
-                    "Lunes",
-                    "Miercoles",
-                    "Viernes"
+                "__class__": "ConsultaPor",
+                "motivo": "\"ardor en los ojos\"",
+                "medicamentos": [
+                    "\"paracetamol\"",
+                    "\"ibuprofeno\""
                 ],
                 "parent": null
             },
-            "disponibilidad": "dias",
+            "disponibilidad": null,
             "parent": null
         }
     ]
