@@ -13,11 +13,13 @@ class Appointment extends Model
     protected $fillable = [
         'student_id',
         'scheduled_by',
+        'provided_by',
         'consultation_id',
         'date',
         'start_time',
         'end_time',
         'status',
+        'notes',
         'reminder_sent',
     ];
 

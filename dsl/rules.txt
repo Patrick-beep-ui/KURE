@@ -1,1 +1,1 @@
-dias disponibles para doctor: Lunes, Miercoles, Viernes
+cuando consulta es por "ardor en los ojos", sugerir medicamentos: "paracetamol", "ibuprofeno"
