@@ -49,7 +49,7 @@ DiasDisponibles:
 ;
 
 HorarioDisponible:
-    'disponible' 'para' 'doctor:' horas+=RangoHora (',' horas+=RangoHora)*
+    'disponible' 'para' 'doctor' doctor=Doctor ':' horas+=RangoHora (',' horas+=RangoHora)*
 ;
 
 Rol:
@@ -69,7 +69,7 @@ Tipo:
 ;
 
 Dia:
-    'Lunes' | 'Martes' | 'Miercoles' | 'Jueves' | 'Viernes'
+    'Lunes' | 'Martes' | 'Miercoles' | 'Jueves' | 'Viernes' | 'Sabado' | 'Domingo'
 ;
 
 RangoHora:

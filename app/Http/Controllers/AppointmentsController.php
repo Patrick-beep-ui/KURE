@@ -67,16 +67,12 @@ class AppointmentsController extends Controller
             $daysAvailable = [];
             $hoursAvailable = [];
     
-            $doctorFullName = strtolower(trim(
-                $doctor->first_name . ' ' . $doctor->last_name
-            ));
+            $doctorFullName = strtolower(trim($doctor->first_name . ' ' . $doctor->last_name));
     
+            // ✅ Process available days
             foreach ($rulesJson['diasdisponibles'] ?? [] as $rule) {
+                if (!isset($rule['doctor'], $rule['dias'])) continue;
     
-                if (!isset($rule['doctor'], $rule['dias'])) {
-                    continue;
-                }
-
                 $ruleDoctor = strtolower(trim($rule['doctor'], "\"' "));
     
                 if ($ruleDoctor === $doctorFullName) {
@@ -84,10 +80,27 @@ class AppointmentsController extends Controller
                 }
             }
     
-            // HorarioDisponible
+            // ✅ Process available hours for the specific doctor
             foreach ($rulesJson['horariodisponible'] ?? [] as $rule) {
-                if (isset($rule['horas'])) {
-                    $hoursAvailable = array_merge($hoursAvailable, $rule['horas']);
+                if (!isset($rule['doctor'], $rule['horas'])) continue;
+    
+                $ruleDoctor = strtolower(trim($rule['doctor'], "\"' "));
+    
+                if ($ruleDoctor === $doctorFullName) {
+                    foreach ($rule['horas'] as $hourRange) {
+                        if (isset($hourRange['inicio'], $hourRange['fin'])) {
+                            $inicio = $hourRange['inicio'];
+                            $fin = $hourRange['fin'];
+    
+                            $hoursAvailable[] = sprintf(
+                                "%s %s - %s %s",
+                                $inicio['numero'],
+                                $inicio['tiempo'],
+                                $fin['numero'],
+                                $fin['tiempo']
+                            );
+                        }
+                    }
                 }
             }
     
@@ -104,6 +117,9 @@ class AppointmentsController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }
-    }    
+    }
     
+     
+    
+
 }
