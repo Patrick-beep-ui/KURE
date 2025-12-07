@@ -11,10 +11,16 @@
     edge[dir=black,arrowtail=empty]
 
 
-2333639581312 -> 2333639581264 [label="reglas:0" arrowtail=diamond dir=both]
-2333639581264 -> 2333639581024 [label="sentencia" arrowtail=diamond dir=both]
-2333639581024[label="{:DiasDisponibles|+doctor:str='\"Domenica Harris\"'\l+dias:list=['Lunes','Miercoles','Viernes']\l}"]
-2333639581264[label="{:Regla|+disponibilidad:str='dias'\l}"]
-2333639581312[label="{:Model|}"]
+2567402167648 -> 2567402167984 [label="reglas:0" arrowtail=diamond dir=both]
+2567402167984 -> 2567402168032 [label="sentencia" arrowtail=diamond dir=both]
+2567402168032 -> 2567402168128 [label="horas:0" arrowtail=diamond dir=both]
+2567402168128 -> 2567402168224 [label="inicio" arrowtail=diamond dir=both]
+2567402168224[label="{:Hora|+numero:str='3'\l+tiempo:str='PM'\l}"]
+2567402168128 -> 2567402168272 [label="fin" arrowtail=diamond dir=both]
+2567402168272[label="{:Hora|+numero:str='6'\l+tiempo:str='PM'\l}"]
+2567402168128[label="{:RangoHora|}"]
+2567402168032[label="{:HorarioDisponible|+doctor:str='\"Patrick Solis\"'\l}"]
+2567402167984[label="{:Regla|+disponibilidad:str='horario'\l}"]
+2567402167648[label="{:Model|}"]
 
 }

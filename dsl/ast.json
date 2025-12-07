@@ -5,16 +5,29 @@
             "__class__": "Regla",
             "clausula": null,
             "sentencia": {
-                "__class__": "DiasDisponibles",
-                "doctor": "\"Domenica Harris\"",
-                "dias": [
-                    "Lunes",
-                    "Miercoles",
-                    "Viernes"
+                "__class__": "HorarioDisponible",
+                "doctor": "\"Patrick Solis\"",
+                "horas": [
+                    {
+                        "__class__": "RangoHora",
+                        "inicio": {
+                            "__class__": "Hora",
+                            "numero": "3",
+                            "tiempo": "PM",
+                            "parent": null
+                        },
+                        "fin": {
+                            "__class__": "Hora",
+                            "numero": "6",
+                            "tiempo": "PM",
+                            "parent": null
+                        },
+                        "parent": null
+                    }
                 ],
                 "parent": null
             },
-            "disponibilidad": "dias",
+            "disponibilidad": "horario",
             "parent": null
         }
     ]

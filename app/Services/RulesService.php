@@ -146,6 +146,12 @@ class RulesService
                 $result = $this->validateDiasDisponibles($sentencia);
                 if (!$result['ok']) return $result;
             }
+
+            // ---- RULE TYPE: HorarioDisponible ----
+            if($type === "HorarioDisponible") {
+                $result = $this->validateHorarioDisponible($sentencia);
+                if (!$result['ok']) return $result;
+            }
         }
     
         return ['ok' => true];
@@ -346,7 +352,56 @@ class RulesService
         return ['ok' => true];
     }
     
+    public function validateHorarioDisponible(array $sentencia): array {
+        $doctorRaw = $sentencia['doctor'] ?? null;
+        $dias = $sentencia['dias'] ?? [];
     
+        if (!$doctorRaw) {
+            return [
+                'ok' => false,
+                'error' => 'Doctor name is required for available days rule.'
+            ];
+        }
+    
+        // Remove quotes
+        $doctorFullName = trim($doctorRaw, "\"' ");
+    
+        // Split into first + last name
+        $parts = preg_split('/\s+/', $doctorFullName);
+    
+        if (count($parts) < 2) {
+            return [
+                'ok' => false,
+                'error' => 'Doctor full name is required (first and last name).',
+                'value' => $doctorFullName
+            ];
+        }
+    
+        $firstName = strtolower($parts[0]);
+        $lastName  = strtolower($parts[count($parts) - 1]); // supports middle names
+
+        $doctor = User::where(DB::raw('LOWER(first_name)'), $firstName)
+            ->where(DB::raw('LOWER(last_name)'), $lastName)
+            ->first();
+    
+        if (!$doctor) {
+            return [
+                'ok' => false,
+                'error' => 'Doctor not found in database.',
+                'missing' => [$doctorFullName]
+            ];
+        }
+    
+        // Ensure the user is actually a doctor
+        if (isset($doctor->role) && strtolower($doctor->role) !== 'doctor') {
+            return [
+                'ok' => false,
+                'error' => "User '{$doctorFullName}' exists but is not a doctor."
+            ];
+        }
+
+        return ['ok' => true];
+    }
     
     public function saveRules(array $rules): bool {
         try {
